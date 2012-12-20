@@ -1,0 +1,7 @@
+name: ChunkControl
+description: War-like game mechanics for Minecraft
+author: megabytes
+website: https://github.com/Minecarts/ChunkControl
+
+main: com.minecarts.chunkcontrol.ChunkControl
+version: ${pom.version}
