@@ -6,7 +6,7 @@ import java.util.WeakHashMap;
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 public class Plot {
     private static Map<Chunk, Plot> plots = new WeakHashMap<Chunk, Plot>();
@@ -53,8 +53,10 @@ public class Plot {
         return this;
     }
 
-    public boolean allows(OfflinePlayer actor) {
+    public boolean allows(Player actor) {
         if (owner == PlotOwner.NONE) return true;
+        if (actor == null) return false;
+        if (actor.hasPermission("chunkcontrol.access")) return true;
         return owner.has(actor);
     }
 }

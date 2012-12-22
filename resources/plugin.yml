@@ -5,3 +5,16 @@ website: https://github.com/Minecarts/ChunkControl
 
 main: com.minecarts.chunkcontrol.Plugin
 version: ${pom.version}
+
+
+commands:
+    chunkcontrol:
+        aliases: [chunk, land, plot, claim, c]
+        description: ChunkControl commands
+        usage: "/<command> [command]"
+
+
+permissions:
+    chunkcontrol.access:
+        description: "Allow access to all chunks, regardless of ownership"
+        default: op
