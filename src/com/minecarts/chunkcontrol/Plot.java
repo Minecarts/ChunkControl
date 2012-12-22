@@ -7,6 +7,7 @@ import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 
 public class Plot {
     private static Map<Chunk, Plot> plots = new WeakHashMap<Chunk, Plot>();
@@ -21,6 +22,11 @@ public class Plot {
     @Override
     public boolean equals(Object other) {
         return chunk.equals(other);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Plot [%d, %d] owned by %s", chunk.getX(), chunk.getZ(), owner == PlotOwner.NONE ? "no one" : owner);
     }
 
     public static Plot at(Chunk chunk) {
@@ -38,12 +44,21 @@ public class Plot {
     public static Plot at(Location location) {
         return at(location.getChunk());
     }
+    public static Plot at(Entity entity) {
+        return at(entity.getLocation());
+    }
 
     public Chunk getChunk() {
         return chunk;
     }
     public PlotOwner getOwner() {
         return owner;
+    }
+    public Plot setOwner() {
+        return setOwner(PlotOwner.NONE);
+    }
+    public Plot setOwner(Player player) {
+        return setOwner(PlotOwner.create(player));
     }
     public Plot setOwner(PlotOwner owner) {
         if (this.owner.equals(owner)) return this;

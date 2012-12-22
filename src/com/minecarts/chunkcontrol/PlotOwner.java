@@ -22,7 +22,12 @@ public class PlotOwner {
         return player.equals(other);
     }
 
-    public PlotOwner create(OfflinePlayer player) {
+    @Override
+    public String toString() {
+        return String.format("PlotOwner [%s]", player.getName());
+    }
+
+    public static PlotOwner create(OfflinePlayer player) {
         if (player == null) return NONE;
 
         PlotOwner owner = owners.get(player);

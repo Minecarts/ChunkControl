@@ -9,6 +9,8 @@ public class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new EventListener(this), this);
+
+        getCommand("chunkcontrol").setExecutor(new CommandHandler(this));
     }
 
 
