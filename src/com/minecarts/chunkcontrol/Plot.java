@@ -13,10 +13,12 @@ public class Plot {
     private static Map<Chunk, Plot> plots = new WeakHashMap<Chunk, Plot>();
     private final Chunk chunk;
     private PlotOwner owner;
+    private int value;
 
-    private Plot(Chunk chunk, PlotOwner owner) {
+    private Plot(Chunk chunk, PlotOwner owner, int value) {
         this.chunk = chunk;
         this.owner = owner;
+        this.value = value;
     }
 
     @Override
@@ -26,14 +28,14 @@ public class Plot {
 
     @Override
     public String toString() {
-        return String.format("Plot [%d, %d] owned by %s", chunk.getX(), chunk.getZ(), owner == PlotOwner.NONE ? "no one" : owner);
+        return String.format("Plot [%d, %d] owned by %s has a value of %d", chunk.getX(), chunk.getZ(), (owner == PlotOwner.NONE ? "no one" : owner), value);
     }
 
     public static Plot at(Chunk chunk) {
         Plot plot = plots.get(chunk);
         if (plot == null) {
-            // TODO: lookup owner, pass to constructor
-            plot = new Plot(chunk, PlotOwner.NONE);
+            // TODO: lookup owner and value, pass to constructor
+            plot = new Plot(chunk, PlotOwner.NONE, 10);
             plots.put(chunk, plot);
         }
         return plot;
@@ -65,6 +67,17 @@ public class Plot {
 
         // TODO: store owner change
         this.owner = owner;
+        return this;
+    }
+    public int getValue() {
+        return value;
+    }
+    public Plot setValue(int value) {
+        this.value = value;
+        return this;
+    }
+    public Plot addValue(int value) {
+        this.value += value;
         return this;
     }
 

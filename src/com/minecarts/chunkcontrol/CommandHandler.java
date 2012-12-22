@@ -29,6 +29,7 @@ public class CommandHandler implements CommandExecutor {
 
     public boolean process(CommandSender sender, String label, String[] args) {
         Player player;
+        Plot plot;
 
         switch (SubCommand.valueOf(label.toUpperCase())) {
             case INFO:
@@ -48,7 +49,19 @@ public class CommandHandler implements CommandExecutor {
                 }
 
                 player = (Player) sender;
-                Plot.at(player).setOwner(player);
+                plot = Plot.at(player);
+
+                if (player.getTotalExperience() < plot.getValue()) {
+                    player.sendMessage("You do not have enough experience to purchase this plot.");
+                    return true;
+                }
+
+                int exp = player.getTotalExperience();
+                player.setTotalExperience(0);
+                player.setExp(0);
+                player.setLevel(0);
+                player.giveExp(exp - plot.getValue());
+                plot.setOwner(player).addValue(plot.getValue());
                 player.sendMessage("Plot purchased.");
                 return true;
 
