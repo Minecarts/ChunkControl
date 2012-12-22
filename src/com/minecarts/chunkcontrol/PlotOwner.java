@@ -34,7 +34,7 @@ public class PlotOwner {
         return owner;
     }
 
-    public boolean allows(OfflinePlayer actor) {
+    public boolean has(OfflinePlayer actor) {
         if (actor == null) return false;
         return actor.equals(player);
     }

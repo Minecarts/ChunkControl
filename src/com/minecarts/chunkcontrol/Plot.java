@@ -53,12 +53,8 @@ public class Plot {
         return this;
     }
 
-    public boolean allows(PlotOwner actor) {
-        if (actor == null || actor == PlotOwner.NONE) return true;
-        return owner.equals(actor);
-    }
     public boolean allows(OfflinePlayer actor) {
-        if (actor == null || actor == PlotOwner.NONE) return true;
-        return owner.allows(actor);
+        if (owner == PlotOwner.NONE) return true;
+        return owner.has(actor);
     }
 }

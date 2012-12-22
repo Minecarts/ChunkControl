@@ -3,13 +3,7 @@ package com.minecarts.chunkcontrol;
 import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.event.Listener;
-
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
-
 import org.bukkit.Bukkit;
-
 
 public class Plugin extends JavaPlugin {
     @Override
