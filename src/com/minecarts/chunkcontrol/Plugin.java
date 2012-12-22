@@ -11,23 +11,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.Bukkit;
 
 
-public class ChunkControl extends JavaPlugin implements Listener {
+public class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(this, this);
-
-        log("%s enabled.", getDescription().getVersion());
-    }
-
-    @Override
-    public void onDisable() {
-        log("%s disabled.", getDescription().getVersion());
-    }
-
-
-    @EventHandler
-    public void playerJoin(PlayerJoinEvent event) {
-        event.getPlayer().sendMessage("Welcome!");
+        Bukkit.getPluginManager().registerEvents(new EventListener(this), this);
     }
 
 

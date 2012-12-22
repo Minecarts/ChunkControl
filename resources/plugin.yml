@@ -3,5 +3,5 @@ description: War-like game mechanics for Minecraft
 author: megabytes
 website: https://github.com/Minecarts/ChunkControl
 
-main: com.minecarts.chunkcontrol.ChunkControl
+main: com.minecarts.chunkcontrol.Plugin
 version: ${pom.version}
