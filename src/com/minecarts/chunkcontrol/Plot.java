@@ -9,6 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 
+import redis.clients.jedis.Jedis;
+
 public class Plot {
     private static Map<Chunk, Plot> plots = new WeakHashMap<Chunk, Plot>();
     private final Chunk chunk;
@@ -50,6 +52,35 @@ public class Plot {
         return at(entity.getLocation());
     }
 
+
+    private String get(final String key) {
+        return new JedisOperation() {
+            public String value;
+            public void run(Jedis jedis) {
+                value = jedis.hget(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()));
+            }
+        }.value;
+    }
+    private boolean set(final String key, final Object value) {
+        return new JedisOperation() {
+            public boolean result;
+            public void run(Jedis jedis) {
+                jedis.hset(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()), String.valueOf(value));
+                result = true;
+            }
+        }.result;
+    }
+    private boolean add(final String key, final double value) {
+        return new JedisOperation() {
+            public boolean result;
+            public void run(Jedis jedis) {
+                jedis.hincrBy(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()), value);
+                result = true;
+            }
+        }.result;
+    }
+
+
     public Chunk getChunk() {
         return chunk;
     }
@@ -69,16 +100,15 @@ public class Plot {
         this.owner = owner;
         return this;
     }
-    public int getValue() {
-        return value;
+
+    public double getValue() {
+        return Double.parseDouble(get("value"));
     }
-    public Plot setValue(int value) {
-        this.value = value;
-        return this;
+    public boolean setValue(double value) {
+        return set("value", value);
     }
-    public Plot addValue(int value) {
-        this.value += value;
-        return this;
+    public boolean addValue(double value) {
+        return add("value", value);
     }
 
     public boolean allows(Player actor) {

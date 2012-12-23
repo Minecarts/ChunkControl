@@ -18,9 +18,9 @@ public class ChunkControl extends JavaPlugin {
         initializeJedis();
 
         // Register events
-        Bukkit.getPluginManager().registerEvents(new EventListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new Events(this), this);
         // Register commands
-        getCommand("chunkcontrol").setExecutor(new CommandHandler(this));
+        getCommand("chunkcontrol").setExecutor(new Commands(this));
     }
 
     @Override

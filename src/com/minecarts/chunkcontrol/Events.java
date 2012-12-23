@@ -9,10 +9,10 @@ import org.bukkit.event.hanging.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-public class EventListener implements Listener {
+public class Events implements Listener {
     private ChunkControl plugin;
 
-    public EventListener(ChunkControl plugin) {
+    public Events(ChunkControl plugin) {
         this.plugin = plugin;
     }
 
