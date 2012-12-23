@@ -10,9 +10,9 @@ public class CommandHandler implements CommandExecutor {
         INFO, BUY, SELL, ALLOW, DENY
     }
 
-    private Plugin plugin;
+    private ChunkControl plugin;
 
-    public CommandHandler(Plugin plugin) {
+    public CommandHandler(ChunkControl plugin) {
         this.plugin = plugin;
     }
 

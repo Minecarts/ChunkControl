@@ -10,9 +10,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class EventListener implements Listener {
-    private Plugin plugin;
+    private ChunkControl plugin;
 
-    public EventListener(Plugin plugin) {
+    public EventListener(ChunkControl plugin) {
         this.plugin = plugin;
     }
 
