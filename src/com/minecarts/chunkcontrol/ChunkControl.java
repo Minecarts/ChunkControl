@@ -1,21 +1,28 @@
 package com.minecarts.chunkcontrol;
 
 import java.util.logging.Level;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import redis.clients.jedis.*;
+
+import com.lambdaworks.redis.RedisClient;
+import com.lambdaworks.redis.RedisConnection;
 
 public class ChunkControl extends JavaPlugin {
-    protected JedisPool jedisPool;
+    protected static ChunkControl plugin;
+    protected RedisClient redisClient;
+    protected RedisConnection<String, String> redis;
 
     @Override
     public void onEnable() {
+        plugin = this;
+
         // Copy config defaults
         getConfig().options().copyDefaults(true);
 
-        initializeJedis();
+        initializeRedis();
 
         // Register events
         Bukkit.getPluginManager().registerEvents(new Events(this), this);
@@ -26,33 +33,44 @@ public class ChunkControl extends JavaPlugin {
     @Override
     public void onDisable() {
         // Clean up
-        if (jedisPool != null) {
-            jedisPool.destroy();
-            jedisPool = null;
+        if (redisClient != null) {
+            redisClient.shutdown();
+            redisClient = null;
         }
     }
 
 
-    protected void initializeJedis() {
-        ConfigurationSection config = getConfig().getConfigurationSection("redis");
-
-        jedisPool = new JedisPool(new JedisPoolConfig(),
-                config.getString("host"),
-                config.getInt("port"),
-                config.getInt("timeout"),
-                config.getString("password"));
-
-        new JedisOperation() {
-            public void run(Jedis jedis) {
-                log("Connected to Redis at %s:%d/%d", jedis.getClient().getHost(), jedis.getClient().getPort(), jedis.getDB());
-                log("  Ping, %s", jedis.ping());
-                log("  Found %d keys", jedis.dbSize());
-            }
-        };
+    public static ChunkControl getPlugin() {
+        return plugin;
     }
 
-    public JedisPool getJedisPool() {
-        return jedisPool;
+
+    protected void initializeRedis() {
+        ConfigurationSection config = getConfig().getConfigurationSection("redis");
+        String host = config.getString("host", "localhost");
+        int port = config.getInt("port", 6379);
+        int timeout = config.getInt("timeout", 5000);
+
+        redisClient = new RedisClient(host, port);
+        redisClient.setDefaultTimeout(timeout, TimeUnit.MILLISECONDS);
+
+        log("Connecting to Redis at %s:%d", host, port);
+        log("  Ping? %s", redis().ping());
+        log("  Found %d keys", redis().dbsize());
+    }
+
+    public RedisConnection<String, String> redis() {
+        if (redis == null) redis = connect();
+        return redis;
+    }
+
+    public RedisConnection<String, String> connect() {
+        RedisConnection<String, String> connection = redisClient.connect();
+
+        String password = getConfig().getString("redis.password");
+        if (password != null) connection.auth(password);
+
+        return connection;
     }
 
 

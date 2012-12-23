@@ -71,8 +71,9 @@ public class Commands implements CommandExecutor {
         player.setTotalExperience(0);
         player.setExp(0);
         player.setLevel(0);
-        player.giveExp(exp - plot.getValue());
-        plot.setOwner(player).addValue(plot.getValue());
+        player.giveExp(exp - (int) plot.getValue());
+        plot.setOwner(player);
+        plot.addValue(plot.getValue());
         player.sendMessage("Plot purchased.");
         return true;
     }

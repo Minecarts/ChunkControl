@@ -9,18 +9,16 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 
-import redis.clients.jedis.Jedis;
+import com.lambdaworks.redis.RedisConnection;
 
 public class Plot {
     private static Map<Chunk, Plot> plots = new WeakHashMap<Chunk, Plot>();
     private final Chunk chunk;
     private PlotOwner owner;
-    private int value;
 
     private Plot(Chunk chunk, PlotOwner owner, int value) {
         this.chunk = chunk;
         this.owner = owner;
-        this.value = value;
     }
 
     @Override
@@ -30,7 +28,7 @@ public class Plot {
 
     @Override
     public String toString() {
-        return String.format("Plot [%d, %d] owned by %s has a value of %d", chunk.getX(), chunk.getZ(), (owner == PlotOwner.NONE ? "no one" : owner), value);
+        return String.format("Plot [%d, %d] owned by %s has a value of %.2f", chunk.getX(), chunk.getZ(), (owner == PlotOwner.NONE ? "no one" : owner), getValue());
     }
 
     public static Plot at(Chunk chunk) {
@@ -54,30 +52,16 @@ public class Plot {
 
 
     private String get(final String key) {
-        return new JedisOperation() {
-            public String value;
-            public void run(Jedis jedis) {
-                value = jedis.hget(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()));
-            }
-        }.value;
+        RedisConnection<String, String> redis = ChunkControl.getPlugin().redis();
+        return redis.hget(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()));
     }
     private boolean set(final String key, final Object value) {
-        return new JedisOperation() {
-            public boolean result;
-            public void run(Jedis jedis) {
-                jedis.hset(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()), String.valueOf(value));
-                result = true;
-            }
-        }.result;
+        RedisConnection<String, String> redis = ChunkControl.getPlugin().redis();
+        return redis.hset(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()), String.valueOf(value));
     }
-    private boolean add(final String key, final double value) {
-        return new JedisOperation() {
-            public boolean result;
-            public void run(Jedis jedis) {
-                jedis.hincrBy(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()), value);
-                result = true;
-            }
-        }.result;
+    private double add(final String key, final double value) {
+        RedisConnection<String, String> redis = ChunkControl.getPlugin().redis();
+        return redis.hincrbyfloat(String.format("chunk:%s:%d", key, chunk.getX()), String.format("%d", chunk.getZ()), value);
     }
 
 
@@ -102,12 +86,13 @@ public class Plot {
     }
 
     public double getValue() {
-        return Double.parseDouble(get("value"));
+        String value = get("value");
+        return value == null ? 10 : Double.parseDouble(value);
     }
     public boolean setValue(double value) {
         return set("value", value);
     }
-    public boolean addValue(double value) {
+    public double addValue(double value) {
         return add("value", value);
     }
 
